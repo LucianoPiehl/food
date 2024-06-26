@@ -1,0 +1,58 @@
+[versions]
+agp = "8.5.0"
+kotlin = "1.9.0"
+coreKtx = "1.13.1"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+appcompat = "1.7.0"
+kotlinGradlePlugin = "1.8.10"
+material = "1.12.0"
+activity = "1.9.0"
+constraintlayout = "2.1.4"
+roomCommon = "2.6.1"
+retrofit = "2.11.0"
+converterGson = "2.0.0-beta2"
+converterGsonVersion = "2.11.0"
+converterScalars = "2.11.0"
+library = "8.5.0"
+databindingAdapters = "8.5.0"
+compilercommon = "3.1.4"
+libraryVersion = "3.2.0-alpha11"
+asynclayoutinflater = "1.0.0"
+recyclerview = "1.3.2"
+picasso = "2.71828"
+roomKtx = "2.6.1"
+jsoup = "1.17.2"
+symbolProcessingGradlePlugin = "1.5.30-1.0.0"
+comGoogleDevtoolsKspGradlePlugin = "2.0.20-Beta1-1.0.22"
+lifecycleViewmodelAndroid = "2.8.2"
+
+[libraries]
+
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit2-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGsonVersion" }
+converter-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "converterScalars" }
+library = { group = "com.android.databinding", name = "library", version.ref = "library" }
+compilercommon = { group = "com.android.databinding", name = "compilerCommon", version.ref = "compilercommon" }
+androidx-asynclayoutinflater = { group = "androidx.asynclayoutinflater", name = "asynclayoutinflater", version.ref = "asynclayoutinflater" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+picasso = { group = "com.squareup.picasso", name = "picasso", version.ref = "picasso" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
+androidx-lifecycle-viewmodel-android = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-android", version.ref = "lifecycleViewmodelAndroid" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
