@@ -2,15 +2,19 @@ package com.example.food.ui
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.food.R
 import com.example.food.databinding.ActivityRecipeDetailBinding
 import com.squareup.picasso.Picasso
-
 
 class RecipeDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRecipeDetailBinding
 
+    private val viewModel: RecipesViewModel by viewModels() {
+        RecipesViewModelFactory(applicationContext)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRecipeDetailBinding.inflate(layoutInflater)
@@ -20,7 +24,25 @@ class RecipeDetailActivity : AppCompatActivity() {
         val recipeTitle = intent.getStringExtra("RECIPE_TITLE")
         val recipeImage = intent.getStringExtra("RECIPE_IMAGE")
         val recipeIngredients = intent.getStringExtra("INGREDIENTS")
+        val id = intent.getIntExtra("RECIPE_ID",0)
+        val favorite = intent.getBooleanExtra("FAVORITE",false)
 
+
+        if (!favorite){
+
+            binding.favoriteIcon.setImageResource(R.drawable.estrella_off)
+
+            //Usar amarillo
+
+
+        } else{
+            //Usar transparente
+            binding.favoriteIcon.setImageResource(R.drawable.estrella_on)
+
+        }
+        binding.favoriteIcon.setOnClickListener {
+            viewModel.toggleFavorite(id)
+        }
         // Set the data to the views
         binding.recipeTitle.text = recipeTitle
         Picasso.get().load(recipeImage).into(binding.recipeImage)

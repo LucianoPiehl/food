@@ -85,17 +85,7 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
             }
         }
     }
-    fun esFav(recipeId: Int, email: String): Boolean {
-        var isFavorite = false
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val db = AppDatabase.getDatabase(appContext)
-                // Verificar si hay registros en la tercera tabla con los parámetros dados
-                isFavorite = db.favoriteRecipeDao().isFavorite(email, recipeId) > 0
-            }
-        }
-        return isFavorite
-    }
+
     fun loadMoreRecipes() {
         val calls = mutableListOf<Call<RecipeDTO>>()
         repeat(6) {
@@ -120,7 +110,7 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
                                                 Log.d("DEBUG NUEVO",detail.toString())
                                                 detail?.let {
                                                     // Combinar datos y crear el objeto Recipe
-                                                    val isRecipeFavorite = esFav(recipeDetail.id, _userEmail.value ?: "")
+                                                    val isRecipeFavorite = obtenerFavorito(recipeDetail.id, _userEmail.value ?: "")
                                                     val newRecipe = Recipe(recipeDetail.id, recipeDetail.title, recipeDetail.image,
                                                         extract_html.removeIngredientGrid(detail), isRecipeFavorite)
                                                     try {
@@ -196,5 +186,16 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
         }
     }
 
+    fun obtenerFavorito(recipeId: Int, email: String): Boolean {
+        var isFavorite = false
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val db = AppDatabase.getDatabase(appContext)
+                // Verificar si hay registros en la tercera tabla con los parámetros dados
+                isFavorite = db.favoriteRecipeDao().isFavorite(email, recipeId) > 0
+            }
+        }
+        return isFavorite
+    }
 }
 

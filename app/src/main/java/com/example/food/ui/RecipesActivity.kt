@@ -20,14 +20,14 @@ class RecipesActivity : AppCompatActivity() {
         val email = intent.getStringExtra("USER_EMAIL")
         if (email != null) {
             viewModel.setUserEmail(email)
+
         }
 
 
         super.onCreate(savedInstanceState)
         binding = ActivityRecipesBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        recipesAdapter = RecipesAdapter(viewModel,this@RecipesActivity)
+        recipesAdapter = RecipesAdapter(viewModel,this@RecipesActivity, email?:"")
         viewModel.recipesAdapter = recipesAdapter
         binding.recipesRecyclerView.apply {
             layoutManager = GridLayoutManager(this@RecipesActivity, 2)

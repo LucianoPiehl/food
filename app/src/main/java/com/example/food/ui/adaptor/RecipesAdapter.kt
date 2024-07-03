@@ -16,11 +16,12 @@ import com.example.food.ui.RecipeDetailActivity
 import com.example.food.ui.RecipesViewModel
 import com.squareup.picasso.Picasso
 
-class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context): RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
+class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context,private val userEmail: String): RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
 
     private var recipes: List<Recipe> = emptyList()
     private var viewModel2 = viewModel
     private val cont = cont2
+    private var email = ""
     fun updateRecipes(newRecipes: List<Recipe>) {
         recipes = newRecipes
         notifyDataSetChanged()
@@ -43,11 +44,21 @@ class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context): RecyclerView.
         fun bind(recipe: Recipe) {
             binding.recipeTitle.text = recipe.title
             Picasso.get().load(recipe.image).into(binding.recipeImage)
-            updateFavoriteIcon(recipe.isFavorite)
+
+            if (recipe.isFavorite == true){
+
+                binding.favoriteIcon.setImageResource(R.drawable.estrella_off)
+
+                //Usar amarillo
+
+
+            } else{
+                //Usar transparente
+                binding.favoriteIcon.setImageResource(R.drawable.estrella_on)
+
+            }
             binding.favoriteIcon.setOnClickListener {
                 viewModel.toggleFavorite(recipe.id)
-                Toast.makeText(appContext,"Cambio realizado!", LENGTH_SHORT)
-
             }
             // Set click listener
             binding.root.setOnClickListener {
@@ -57,21 +68,15 @@ class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context): RecyclerView.
                     putExtra("RECIPE_TITLE", recipe.title)
                     putExtra("RECIPE_IMAGE", recipe.image)
                     putExtra("INGREDIENTS",recipe.ingredients)
+                    //putExtra("FAVORITE", recipe.isFavorite)
                     putExtra("FAVORITE", recipe.isFavorite)
+
                 }
 
                 context.startActivity(intent)
             }
         }
-        private fun updateFavoriteIcon(isFavorite: Boolean) {
-            val favoriteIcon = if (isFavorite) {
 
-                R.drawable.estrella_on
-            } else {
-                R.drawable.estrella_off
-            }
-            binding.favoriteIcon.setImageResource(favoriteIcon)
-        }
 
     }
 }
