@@ -57,9 +57,6 @@ class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context,private val use
                 binding.favoriteIcon.setImageResource(R.drawable.estrella_on)
 
             }
-            binding.favoriteIcon.setOnClickListener {
-                viewModel.toggleFavorite(recipe.id)
-            }
             // Set click listener
             binding.root.setOnClickListener {
                 val context = it.context

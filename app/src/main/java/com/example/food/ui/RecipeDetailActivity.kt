@@ -40,9 +40,7 @@ class RecipeDetailActivity : AppCompatActivity() {
             binding.favoriteIcon.setImageResource(R.drawable.estrella_on)
 
         }
-        binding.favoriteIcon.setOnClickListener {
-            viewModel.toggleFavorite(id)
-        }
+
         // Set the data to the views
         binding.recipeTitle.text = recipeTitle
         Picasso.get().load(recipeImage).into(binding.recipeImage)

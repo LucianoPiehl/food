@@ -49,7 +49,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:src="@{recipe.isFavorite ? @drawable/estrella_on : @drawable/estrella_off}"
-            android:onClick="@{() -> viewModel.toggleFavorite(recipe.id)}"
             android:contentDescription="Icono de favorito" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

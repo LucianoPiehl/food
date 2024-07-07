@@ -3,9 +3,17 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.devtools.ksp")
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storePassword = "elpioli123"
+            keyAlias = "client"
+            keyPassword = "elpioli123"
+        }
+    }
     packagingOptions {
         resources.excludes.add("META-INF/*")
     }
@@ -51,7 +59,12 @@ android {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation("com.google.firebase:firebase-analytics:22.0.2")
     implementation(libs.androidx.lifecycle.viewmodel.android)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
     val room_version = "2.6.1"
     implementation("androidx.room:room-ktx:$room_version")
     kapt("androidx.room:room-compiler:$room_version")

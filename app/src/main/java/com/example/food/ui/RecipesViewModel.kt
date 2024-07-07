@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.food.data.AppDatabase
 import com.example.food.data.IngredientRepository
 import com.example.food.data.RecipesRepository
-import com.example.food.model.FavoriteRecipe
 import com.example.food.model.Recipe
 import com.example.food.model.RecipeDTO
 import com.example.food.ui.adaptor.RecipesAdapter
@@ -27,7 +26,7 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
     private val repository2 = IngredientRepository.getInstance()
     private val _recipes = MutableLiveData<List<Recipe>>()
     private val extract_html= sustraer_html()
-    private val _favoriteRecipes = MutableLiveData<List<FavoriteRecipe>>() // LiveData para recetas favoritas
+// LiveData para recetas favoritas
     val recipes: LiveData<List<Recipe>> get() = _recipes
     lateinit var recipesAdapter: RecipesAdapter
     private val _userEmail = MutableLiveData<String>()
@@ -41,7 +40,7 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
 
     init {
         _recipes.value = emptyList()
-        _favoriteRecipes.value = emptyList() // Inicializar la lista de recetas favoritas
+       // Inicializar la lista de recetas favoritas
         loadMoreRecipes()
         loadFavoriteRecipes()
 
@@ -51,40 +50,8 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
     }
 
 
-    fun toggleFavorite(recipeId: Int) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-
-                val db = AppDatabase.getDatabase(appContext)
-
-                // Obtener el email del usuario actual
-                val userEmail = _userEmail.value ?: return@withContext
-                val userDao = db.userDao()
-                val user = userDao.getUserByEmailSync(userEmail) ?: return@withContext
-
-                // Verificar si la receta está marcada como favorita
-                val isFavorite = db.favoriteRecipeDao().isFavorite(user.email, recipeId) > 0
-                Log.d("DEBUG FAV","La receta es fav?: "+isFavorite)
-                // Cambiar el estado de favorito
-                if (isFavorite) {
-                    db.favoriteRecipeDao().deleteFavoriteRecipe(user.email, recipeId)
 
 
-                } else {
-                    db.favoriteRecipeDao().insertFavoriteRecipe(FavoriteRecipe(user.email, recipeId))
-
-                }
-
-                // Actualizar el estado de isFavorite en la lista de recetas cargadas
-                loadedRecipes.find { it.id == recipeId }?.isFavorite = !isFavorite
-
-                // Notificar cambios en la lista de recetas
-                _recipes.postValue(loadedRecipes)
-
-
-            }
-        }
-    }
 
     fun loadMoreRecipes() {
         val calls = mutableListOf<Call<RecipeDTO>>()
@@ -110,9 +77,8 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
                                                 Log.d("DEBUG NUEVO",detail.toString())
                                                 detail?.let {
                                                     // Combinar datos y crear el objeto Recipe
-                                                    val isRecipeFavorite = obtenerFavorito(recipeDetail.id, _userEmail.value ?: "")
                                                     val newRecipe = Recipe(recipeDetail.id, recipeDetail.title, recipeDetail.image,
-                                                        extract_html.removeIngredientGrid(detail), isRecipeFavorite)
+                                                        extract_html.removeIngredientGrid(detail))
                                                     try {
                                                         viewModelScope.launch {
                                                             withContext(Dispatchers.IO) {
@@ -186,16 +152,6 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
         }
     }
 
-    fun obtenerFavorito(recipeId: Int, email: String): Boolean {
-        var isFavorite = false
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val db = AppDatabase.getDatabase(appContext)
-                // Verificar si hay registros en la tercera tabla con los parámetros dados
-                isFavorite = db.favoriteRecipeDao().isFavorite(email, recipeId) > 0
-            }
-        }
-        return isFavorite
-    }
+
 }
 

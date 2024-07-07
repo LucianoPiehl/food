@@ -3,8 +3,8 @@ agp = "8.5.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
 appcompat = "1.7.0"
 kotlinGradlePlugin = "1.8.10"
 material = "1.12.0"
@@ -26,7 +26,9 @@ roomKtx = "2.6.1"
 jsoup = "1.17.2"
 symbolProcessingGradlePlugin = "1.5.30-1.0.0"
 comGoogleDevtoolsKspGradlePlugin = "2.0.20-Beta1-1.0.22"
-lifecycleViewmodelAndroid = "2.8.2"
+lifecycleViewmodelAndroid = "2.8.3"
+firebaseAuthKtx = "23.0.0"
+playServicesAuth = "21.2.0"
 
 [libraries]
 
@@ -51,6 +53,8 @@ picasso = { group = "com.squareup.picasso", name = "picasso", version.ref = "pic
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 androidx-lifecycle-viewmodel-android = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-android", version.ref = "lifecycleViewmodelAndroid" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
