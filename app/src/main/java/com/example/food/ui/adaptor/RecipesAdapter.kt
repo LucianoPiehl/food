@@ -45,29 +45,12 @@ class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context,private val use
             binding.recipeTitle.text = recipe.title
             Picasso.get().load(recipe.image).into(binding.recipeImage)
 
-            if (recipe.isFavorite == true){
 
-                binding.favoriteIcon.setImageResource(R.drawable.estrella_off)
-
-                //Usar amarillo
-
-
-            } else{
-                //Usar transparente
-                binding.favoriteIcon.setImageResource(R.drawable.estrella_on)
-
-            }
             // Set click listener
             binding.root.setOnClickListener {
                 val context = it.context
                 val intent = Intent(context, RecipeDetailActivity::class.java).apply {
                     putExtra("RECIPE_ID", recipe.id)
-                    putExtra("RECIPE_TITLE", recipe.title)
-                    putExtra("RECIPE_IMAGE", recipe.image)
-                    putExtra("INGREDIENTS",recipe.ingredients)
-                    //putExtra("FAVORITE", recipe.isFavorite)
-                    putExtra("FAVORITE", recipe.isFavorite)
-
                 }
 
                 context.startActivity(intent)

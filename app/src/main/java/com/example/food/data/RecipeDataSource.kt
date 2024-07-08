@@ -2,6 +2,7 @@ package com.example.food.data
 
 import android.util.Log
 import com.example.food.model.RecipeDTO
+import com.example.food.model.SingleRecipeDTO
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -33,7 +34,7 @@ class RecipeDataSource {
         return api.getRandomRecipeAsync()
     }
 
-    fun getRecipeById(id: Int): Call<RecipeDTO> {
+    fun getRecipeById(id: Int): Call<SingleRecipeDTO> {
         return api.getRecipesXIDAsync(id)
     }
 }

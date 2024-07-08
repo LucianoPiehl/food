@@ -26,7 +26,7 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
     private val appContext2:Context = appContext
     private val _recipes = MutableLiveData<List<Recipe>>()
 
-// LiveData para recetas favoritas
+    // LiveData para recetas favoritas
     val recipes: LiveData<List<Recipe>> get() = _recipes
     lateinit var recipesAdapter: RecipesAdapter
     private val _userEmail = MutableLiveData<String>()
@@ -40,12 +40,12 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
 
     init {
         _recipes.value = emptyList()
-       // Inicializar la lista de recetas favoritas
+        // Inicializar la lista de recetas favoritas
         loadMoreRecipes()
     }
 
     fun loadMoreRecipes() {
-       repository.loadRecipes(appContext2, loadedRecipes,recipes, _recipes)
+        repository.loadRecipes(appContext2, loadedRecipes,recipes, _recipes)
     }
 
 }

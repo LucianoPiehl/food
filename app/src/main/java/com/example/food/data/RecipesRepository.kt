@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.food.model.Recipe
 import com.example.food.model.RecipeDTO
+import com.example.food.model.SingleRecipeDTO
 import com.example.food.util.sustraer_html
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -124,7 +125,7 @@ class RecipesRepository() {
             })
         }
     }
-    fun getRecipeById(id: Int): Call<RecipeDTO> {
+    fun getRecipeById(id: Int): Call<SingleRecipeDTO> {
         return dataSource.getRecipeById(id)
     }
 }

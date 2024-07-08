@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.food.model.Recipe
 import com.example.food.model.RecipeDao
 
-@Database(entities = [Recipe::class], version = 5, exportSchema = false)
+@Database(entities = [Recipe::class], version = 6, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun recipeDao(): RecipeDao
@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).fallbackToDestructiveMigrationFrom(4) // Cambiar el número de versión según sea necesario
+                ).fallbackToDestructiveMigrationFrom(5) // Cambiar el número de versión según sea necesario
                     .build()
                 INSTANCE = instance
                 instance
