@@ -10,8 +10,9 @@ android {
     signingConfigs {
         getByName("debug") {
             storePassword = "elpioli123"
-            keyAlias = "client"
+            keyAlias = "nombreAlias"
             keyPassword = "elpioli123"
+            storeFile = file("C:\\Users\\54225\\.android\\debug.keystore")
         }
     }
     packagingOptions {

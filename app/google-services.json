@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "132268075448",
-    "project_id": "foody-efb2d",
-    "storage_bucket": "foody-efb2d.appspot.com"
+    "project_number": "818528080010",
+    "project_id": "food-5a48f",
+    "storage_bucket": "food-5a48f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:132268075448:android:c4cf2d3bb652018c5a474d",
+        "mobilesdk_app_id": "1:818528080010:android:fbdbf42deb397889cedd73",
         "android_client_info": {
           "package_name": "com.example.food"
         }
       },
       "oauth_client": [
         {
-          "client_id": "132268075448-im5mo9s56d1ho6ferq7qegrshllcqbgv.apps.googleusercontent.com",
+          "client_id": "818528080010-ob3h5bblsi5juf1a91l3kl06f9e6j8s5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.food",
-            "certificate_hash": "9196f7b24a1940c7129069d5e4e80ec49509d486"
+            "certificate_hash": "a0cea3c5e094acac7c617cc4776c0941146f48cb"
           }
         },
         {
-          "client_id": "132268075448-34c38rgkp6f3uvcnjh90dqfbm1sp3qom.apps.googleusercontent.com",
+          "client_id": "818528080010-1ogn77h7ehc8otblh9anfpij1s5qalnp.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC_H7_OfKjfnGwNK-DbpUB_rvVp-61YmOw"
+          "current_key": "AIzaSyAWpqUghrtY-fyK7xuHRvgpA0zRqAEeyUU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "132268075448-34c38rgkp6f3uvcnjh90dqfbm1sp3qom.apps.googleusercontent.com",
+              "client_id": "818528080010-1ogn77h7ehc8otblh9anfpij1s5qalnp.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
