@@ -3,6 +3,7 @@ package com.example.food.ui.adaptor
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -29,6 +30,7 @@ class RecipesAdapter(email3:String,viewModel: RecipesViewModel, cont2: Context,p
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         val binding = ItemRecipeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        Log.d("Email en onCreateVH",email.toString())
         return RecipeViewHolder(email,binding, viewModel2, cont)
     }
 

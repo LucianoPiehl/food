@@ -69,8 +69,7 @@ class LoginActivity : AppCompatActivity() {
         firebaseAuth.signInWithCredential(credential)
             .addOnSuccessListener { authResult ->
                 val firebaseUser = firebaseAuth.currentUser
-                val uid = firebaseUser!!.uid
-                val email = firebaseUser.email
+                val email = firebaseUser?.email
 
                 if (authResult.additionalUserInfo!!.isNewUser) {
                     // Crear Account
@@ -80,8 +79,11 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this@LoginActivity, "Cuenta existente...", Toast.LENGTH_LONG).show()
                 }
 
-                startActivity(Intent(this@LoginActivity, RecipesActivity::class.java))
+                val intent = Intent(this@LoginActivity, RecipesActivity::class.java)
+                intent.putExtra("USER_EMAIL", email)
+                startActivity(intent)
                 finish()
+
             }
             .addOnFailureListener { e->
                 Toast.makeText(this@LoginActivity, "Login fallido...", Toast.LENGTH_LONG).show()

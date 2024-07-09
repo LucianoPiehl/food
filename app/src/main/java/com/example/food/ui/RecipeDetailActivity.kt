@@ -1,25 +1,18 @@
 package com.example.food.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.food.R
-import com.example.food.data.IngredientRepository
 import com.example.food.data.RecipesRepository
 import com.example.food.databinding.ActivityRecipeDetailBinding
-import com.example.food.model.RecipeDTO
 import com.example.food.model.SingleRecipeDTO
 import com.example.food.util.sustraer_html
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class RecipeDetailActivity : AppCompatActivity() {
 
@@ -40,7 +33,15 @@ class RecipeDetailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val recipe: SingleRecipeDTO = repository.getRecipeById(id)
             recipe.let {
-              
+                binding.favoriteIcon.setOnClickListener(){
+                    repository.setFavorite(email.toString(),recipe.id)
+                    val drawable=binding.favoriteIcon.drawable
+                    if (drawable.toString() == "estrella_off"){
+                        binding.favoriteIcon.setImageResource(R.drawable.estrella_on)
+                    }else{
+                        binding.favoriteIcon.setImageResource(R.drawable.estrella_off)
+                    }
+                }
                 binding.recipeTitle.text = recipe.title
                 Picasso.get().load(recipe.image).into(binding.recipeImage)
                 binding.webView.loadDataWithBaseURL(

@@ -3,7 +3,6 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.example.food.model.Recipe
 import com.example.food.model.RecipeDTO
 import com.example.food.model.SingleRecipeDTO
@@ -129,5 +128,9 @@ class RecipesRepository() {
     }
     suspend fun getRecipeById(id: Int):SingleRecipeDTO {
         return dataSource.getRecipeById(id)
+    }
+
+    fun setFavorite(email: String,id: Int) {
+        return dataSource.setFavorite(email,id)
     }
 }

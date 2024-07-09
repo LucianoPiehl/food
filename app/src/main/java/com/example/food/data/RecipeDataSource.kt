@@ -116,4 +116,43 @@ class RecipeDataSource {
         }
 
     }
+
+    fun setFavorite(email:String,id: Int) {
+        val docRef = db.collection("FavUsers")
+            .document(email)
+            .collection("Favorites")
+            .document(id.toString())
+
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    // Documento existe, borrarlo
+                    docRef.delete()
+                        .addOnSuccessListener {
+                            Log.d("TAG", "Documento eliminado correctamente para $email con ID $id")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("TAG", "Error al eliminar documento para $email con ID $id", e)
+                        }
+                } else {
+                    // Documento no existe, crearlo
+                    val data = hashMapOf(
+                        "id" to id
+                    )
+
+                    docRef.set(data)
+                        .addOnSuccessListener {
+                            Log.d("TAG", "Documento creado correctamente para $email con ID $id")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("TAG", "Error al crear documento para $email con ID $id", e)
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("TAG", "Error al consultar documento para $email con ID $id", e)
+            }
+        //db.collection("FavUsers").document(email).collection("Favorites").document().set(id)
+    }
 }
+
