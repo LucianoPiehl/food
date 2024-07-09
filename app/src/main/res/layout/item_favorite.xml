@@ -5,10 +5,10 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.food.ui.RecipesViewModel" />
+            type="com.example.food.ui.FavoritesViewModel" />
         <variable
             name="recipe"
-            type="com.example.food.model.Recipe" />
+            type="com.example.food.model.SingleRecipeDTO" />
 
     </data>
 
@@ -41,7 +41,7 @@
             tools:text="Recipe Title" />
 
         <ImageView
-            android:id="@+id/favoriteIcon"
+            android:id="@+id/favoriteIcon2"
             android:layout_width="53dp"
             android:layout_height="66dp"
             android:layout_margin="8dp"
@@ -49,8 +49,8 @@
             android:focusable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@{recipe.isFavorite ? @drawable/estrella_on : @drawable/estrella_off}"
             android:contentDescription="Icono de favorito" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
+

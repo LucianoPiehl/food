@@ -17,7 +17,7 @@ import com.example.food.ui.RecipeDetailActivity
 import com.example.food.ui.RecipesViewModel
 import com.squareup.picasso.Picasso
 
-class RecipesAdapter(email3:String,viewModel: RecipesViewModel, cont2: Context,private val userEmail: String): RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
+class RecipesAdapter(email3:String,viewModel: RecipesViewModel, cont2: Context): RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
 
     private var recipes: List<Recipe> = emptyList()
     private var viewModel2 = viewModel
@@ -30,7 +30,6 @@ class RecipesAdapter(email3:String,viewModel: RecipesViewModel, cont2: Context,p
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         val binding = ItemRecipeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        Log.d("Email en onCreateVH",email.toString())
         return RecipeViewHolder(email,binding, viewModel2, cont)
     }
 

@@ -1,46 +1,41 @@
 package com.example.food.ui
+
 import android.content.Intent
 import android.os.Bundle
-
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.food.databinding.ActivityRecipesBinding
-import com.example.food.ui.adaptor.RecipesAdapter
-class RecipesActivity : AppCompatActivity() {
+import androidx.recyclerview.widget.RecyclerView
+import com.example.food.databinding.ActivityFavoritesBinding
+import com.example.food.ui.adaptor.FavoritesAdapter
 
-    private lateinit var binding: ActivityRecipesBinding
-    private val viewModel: RecipesViewModel by viewModels() {
-        RecipesViewModelFactory(applicationContext)
+class FavoritesActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityFavoritesBinding
+    private val viewModel: FavoritesViewModel by viewModels {
+        FavoritesViewModelFactory(applicationContext)
     }
-    private lateinit var recipesAdapter: RecipesAdapter
+    private lateinit var favoritesAdapter: FavoritesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val email = intent.getStringExtra("USER_EMAIL")
         if (email != null) {
             viewModel.setUserEmail(email)
-
-        }else{
+        } else {
             viewModel.setUserEmail("")
         }
 
-
         super.onCreate(savedInstanceState)
-        binding = ActivityRecipesBinding.inflate(layoutInflater)
+        binding = ActivityFavoritesBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.favoritesButton.setOnClickListener(){
-            val intent = Intent(this@RecipesActivity, FavoritesActivity::class.java)
-            intent.putExtra("USER_EMAIL", email)
-            startActivity(intent)
-        }
 
-        recipesAdapter = RecipesAdapter(email.toString(),viewModel,this@RecipesActivity)
-        viewModel.recipesAdapter = recipesAdapter
-        binding.recipesRecyclerView.apply {
-            layoutManager = GridLayoutManager(this@RecipesActivity, 2)
-            adapter = recipesAdapter
+        favoritesAdapter = FavoritesAdapter(email.toString(), viewModel, this@FavoritesActivity)
+        viewModel.favoritesAdapter = favoritesAdapter
+
+        binding.favoritesRecyclerView.apply {
+            layoutManager = GridLayoutManager(this@FavoritesActivity, 2)
+            adapter = favoritesAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -50,18 +45,14 @@ class RecipesActivity : AppCompatActivity() {
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
                     if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
-                        // Llegamos al final del RecyclerView, cargamos más recetas
-                        viewModel.loadMoreRecipes()
+                        viewModel.loadMoreFavorites()
                     }
                 }
             })
         }
 
-        viewModel.recipes.observe(this, Observer { recipes ->
-            recipesAdapter.updateRecipes(recipes)
-
-
+        viewModel.favorites.observe(this, Observer { favorites ->
+            favoritesAdapter.updateFavorites(favorites)
         })
-
     }
 }

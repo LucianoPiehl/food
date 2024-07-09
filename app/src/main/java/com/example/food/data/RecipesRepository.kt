@@ -7,9 +7,11 @@ import com.example.food.model.Recipe
 import com.example.food.model.RecipeDTO
 import com.example.food.model.SingleRecipeDTO
 import com.example.food.util.sustraer_html
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
@@ -18,7 +20,9 @@ import retrofit2.Response
 class RecipesRepository() {
     private val dataSource = RecipeDataSource.getInstance()
     private val repository2 = IngredientRepository.getInstance()
-    private val extract_html= sustraer_html()
+    private val extract_html = sustraer_html()
+    private val firestore = FirebaseFirestore.getInstance()
+
     companion object {
         @Volatile
         private var instance: RecipesRepository? = null
@@ -29,10 +33,16 @@ class RecipesRepository() {
             }
         }
     }
+
     private fun getRandomRecipe(): Call<RecipeDTO> {
         return dataSource.getRandomRecipe()
     }
-    fun loadRecipes(appContext: Context, loadedRecipes: MutableList<Recipe>,recipes: LiveData<List<Recipe>>,_recipes: MutableLiveData<List<Recipe>>){
+
+    fun loadRecipes(
+        appContext: Context,
+        loadedRecipes: MutableList<Recipe>,
+        _recipes: MutableLiveData<List<Recipe>>
+    ) {
         val calls = mutableListOf<Call<RecipeDTO>>()
         repeat(6) {
             calls.add(getRandomRecipe())
@@ -51,24 +61,38 @@ class RecipesRepository() {
                                     // Realizamos una llamada adicional para obtener más datos
                                     repository2.getIngredientXID(recipeDetail.id).enqueue(object :
                                         Callback<String> {
-                                        override fun onResponse(call: Call<String>, detailResponse: Response<String>) {
+                                        override fun onResponse(
+                                            call: Call<String>,
+                                            detailResponse: Response<String>
+                                        ) {
                                             if (detailResponse.isSuccessful) {
                                                 val detail = detailResponse.body()
                                                 detail?.let {
                                                     // Combinar datos y crear el objeto Recipe
-                                                    val newRecipe = Recipe(recipeDetail.id, recipeDetail.title, recipeDetail.image,
-                                                        extract_html.removeIngredientGrid(detail))
+                                                    val newRecipe = Recipe(
+                                                        recipeDetail.id,
+                                                        recipeDetail.title,
+                                                        recipeDetail.image,
+                                                        extract_html.removeIngredientGrid(detail)
+                                                    )
                                                     try {
                                                         GlobalScope.launch {
                                                             withContext(Dispatchers.IO) {
-                                                                val db = AppDatabase.getDatabase(appContext)
+                                                                val db = AppDatabase.getDatabase(
+                                                                    appContext
+                                                                )
                                                                 // Insertar las recetas en la base de datos
-                                                                db.recipeDao().insertRecipes((newRecipe))
+                                                                db.recipeDao()
+                                                                    .insertRecipes((newRecipe))
                                                             }
                                                         }
 
                                                     } catch (e: Exception) {
-                                                        Log.e("RecipesViewModel", "Error inserting recipes into local database", e)
+                                                        Log.e(
+                                                            "RecipesViewModel",
+                                                            "Error inserting recipes into local database",
+                                                            e
+                                                        )
                                                     }
                                                     // Agregamos la nueva receta a la lista cargada
                                                     loadedRecipes.add(newRecipe)
@@ -78,7 +102,10 @@ class RecipesRepository() {
                                                     Log.d("DEBUG2", "El cuerpo del detalle es nulo")
                                                 }
                                             } else {
-                                                Log.d("DEBUG2", "Error en la respuesta del servidor de detalle")
+                                                Log.d(
+                                                    "DEBUG2",
+                                                    "Error en la respuesta del servidor de detalle"
+                                                )
                                             }
                                         }
 
@@ -96,12 +123,17 @@ class RecipesRepository() {
                         }
                     } else {
                         Log.d("DEBUG_DE LA API", "Error en la respuesta del servidor")
-                        getRecipesFromLocalDatabase(appContext,loadedRecipes,_recipes)
+                        getRecipesFromLocalDatabase(appContext, loadedRecipes, _recipes)
 
 
                     }
                 }
-                private fun getRecipesFromLocalDatabase(appContext: Context, loadedRecipes: MutableList<Recipe>, _recipes: MutableLiveData<List<Recipe>>) {
+
+                private fun getRecipesFromLocalDatabase(
+                    appContext: Context,
+                    loadedRecipes: MutableList<Recipe>,
+                    _recipes: MutableLiveData<List<Recipe>>
+                ) {
                     try {
                         GlobalScope.launch {
                             withContext(Dispatchers.IO) {
@@ -119,6 +151,7 @@ class RecipesRepository() {
                         Log.e("RecipesViewModel", "Error retrieving recipes from local database", e)
                     }
                 }
+
                 override fun onFailure(call: Call<RecipeDTO>, t: Throwable) {
                     // Handle failure
                     Log.d("DEBUG", t.toString())
@@ -126,11 +159,64 @@ class RecipesRepository() {
             })
         }
     }
-    suspend fun getRecipeById(id: Int):SingleRecipeDTO {
+
+    suspend fun getRecipeById(id: Int): SingleRecipeDTO {
         return dataSource.getRecipeById(id)
     }
 
-    fun setFavorite(email: String,id: Int) {
-        return dataSource.setFavorite(email,id)
+    fun setFavorite(email: String, id: Int) {
+        return dataSource.setFavorite(email, id)
     }
+
+    suspend fun getFavorites(email:String,
+                             loadedRecipes: MutableList<SingleRecipeDTO>
+                             ,_recipes: MutableLiveData<List<SingleRecipeDTO>>
+    ){
+        return dataSource.getFavorites(email,loadedRecipes,_recipes)
+
+    }
+    /*
+    suspend fun getFavorites(
+
+        appContext: Context,
+        userEmail: String,
+        favoriteRecipes: MutableList<SingleRecipeDTO>,
+        _favorites: MutableLiveData<List<SingleRecipeDTO>>
+    ) {
+        try {
+            val userDoc = firestore.collection("FavUsers").document(userEmail).get().await()
+            if (userDoc.exists()) {
+                val favoritesCollection = userDoc.reference.collection("Favorites").get().await()
+                favoritesCollection.documents.mapNotNull { document ->
+                    val recipeId = document.getLong("id")?.toInt()
+                    recipeId?.let {
+                        val recipe = getRecipeSafely(it)
+                        recipe?.let {
+                            favoriteRecipes.add(it)
+                            _favorites.postValue(favoriteRecipes)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun getRecipeSafely(id: Int): SingleRecipeDTO? {
+        return withContext(Dispatchers.IO) {
+            try {
+                dataSource.getRecipeById(id)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+    */
+
+
+
 }
+
+

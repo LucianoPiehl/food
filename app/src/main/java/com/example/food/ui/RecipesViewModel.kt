@@ -45,7 +45,7 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
     }
 
     fun loadMoreRecipes() {
-        repository.loadRecipes(appContext2, loadedRecipes,recipes, _recipes)
+        repository.loadRecipes(appContext2, loadedRecipes, _recipes)
     }
 
 }

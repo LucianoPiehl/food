@@ -1,16 +1,21 @@
 package com.example.food.data
 
+import android.content.Context
 import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.food.model.Recipe
 import com.example.food.model.RecipeDTO
+import com.example.food.model.RecipeFav
 import com.example.food.model.SingleRecipeDTO
 import com.example.food.util.sustraer_html
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.tasks.await
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -118,41 +123,46 @@ class RecipeDataSource {
     }
 
     fun setFavorite(email:String,id: Int) {
-        val docRef = db.collection("FavUsers")
-            .document(email)
-            .collection("Favorites")
-            .document(id.toString())
+        val favUni = RecipeFav(id)
+        db.collection("FavUsers").document(email).collection("Favorites").document().set(favUni)
 
-        docRef.get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    // Documento existe, borrarlo
-                    docRef.delete()
-                        .addOnSuccessListener {
-                            Log.d("TAG", "Documento eliminado correctamente para $email con ID $id")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w("TAG", "Error al eliminar documento para $email con ID $id", e)
-                        }
-                } else {
-                    // Documento no existe, crearlo
-                    val data = hashMapOf(
-                        "id" to id
-                    )
 
-                    docRef.set(data)
-                        .addOnSuccessListener {
-                            Log.d("TAG", "Documento creado correctamente para $email con ID $id")
+    }
+
+    suspend fun getFavorites(email:String,
+                             loadedRecipes: MutableList<SingleRecipeDTO>,
+                             _recipes: MutableLiveData<List<SingleRecipeDTO>>
+    ){
+        Log.d("DEBUG ID FS", email)
+        val a=db.collection("FavUsers").document("luchopinamar123@gmail.com").collection("Favorites").get().await()
+        a.map{
+            it.id
+        }.forEach{ item_id ->
+            val recipe: Call<SingleRecipeDTO> = api.getRecipesXIDAsync(item_id.toInt())
+            recipe.enqueue(
+                object : Callback<SingleRecipeDTO> {
+                    override fun onResponse(
+                        call: Call<SingleRecipeDTO>,
+                        response: Response<SingleRecipeDTO>
+                    ){
+                        val recipeDTO = response.body()
+                        recipeDTO?.let {
+                            val a =SingleRecipeDTO(item_id.toInt(),recipeDTO.title,recipeDTO.image,recipeDTO.ingredients)
+                            loadedRecipes.add(a)
+                            // Actualizamos el LiveData con todas las recetas cargadas
+                            _recipes.postValue(loadedRecipes)
                         }
-                        .addOnFailureListener { e ->
-                            Log.w("TAG", "Error al crear documento para $email con ID $id", e)
-                        }
+
+
+                    }
+
+                    override fun onFailure(p0: Call<SingleRecipeDTO>, p1: Throwable) {
+                        Log.d("DEBUG","Error: ${p1.message}")
+                    }
                 }
-            }
-            .addOnFailureListener { e ->
-                Log.w("TAG", "Error al consultar documento para $email con ID $id", e)
-            }
-        //db.collection("FavUsers").document(email).collection("Favorites").document().set(id)
+            )
+        }
+
     }
 }
 

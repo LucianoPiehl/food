@@ -35,12 +35,6 @@ class RecipeDetailActivity : AppCompatActivity() {
             recipe.let {
                 binding.favoriteIcon.setOnClickListener(){
                     repository.setFavorite(email.toString(),recipe.id)
-                    val drawable=binding.favoriteIcon.drawable
-                    if (drawable.toString() == "estrella_off"){
-                        binding.favoriteIcon.setImageResource(R.drawable.estrella_on)
-                    }else{
-                        binding.favoriteIcon.setImageResource(R.drawable.estrella_off)
-                    }
                 }
                 binding.recipeTitle.text = recipe.title
                 Picasso.get().load(recipe.image).into(binding.recipeImage)
