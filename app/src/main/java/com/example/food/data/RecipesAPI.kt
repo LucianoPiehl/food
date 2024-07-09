@@ -10,16 +10,16 @@ import retrofit2.http.Query
 
 interface RecipesAPI {
 
-    @GET("/recipes/{id}/information?apiKey=fe384e0c291649e8b3a07c19ba71972a")
+    @GET("/recipes/{id}/information?apiKey=206b9f8f0fa14aeb88db2d0b9200b6cf")
     fun getRecipesXIDAsync(
         @Path("id") id: Int
     ): Call<SingleRecipeDTO>
 
-    @GET("/recipes/random?apiKey=fe384e0c291649e8b3a07c19ba71972a")
+    @GET("/recipes/random?apiKey=206b9f8f0fa14aeb88db2d0b9200b6cf")
     fun getRandomRecipeAsync(): Call<RecipeDTO>
 
 
-    @GET("/recipes/{id}/ingredientWidget?apiKey=fe384e0c291649e8b3a07c19ba71972a")
+    @GET("/recipes/{id}/ingredientWidget?apiKey=206b9f8f0fa14aeb88db2d0b9200b6cf")
     fun getIngredientsWidget(
         @Path("id") id: Int,
         @Query("measure") measure: String = "us"

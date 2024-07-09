@@ -29,6 +29,7 @@ comGoogleDevtoolsKspGradlePlugin = "2.0.20-Beta1-1.0.22"
 lifecycleViewmodelAndroid = "2.8.3"
 firebaseAuthKtx = "23.0.0"
 playServicesAuth = "21.2.0"
+firebaseFirestore = "25.0.0"
 
 [libraries]
 
@@ -55,6 +56,7 @@ jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 androidx-lifecycle-viewmodel-android = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-android", version.ref = "lifecycleViewmodelAndroid" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -5,4 +5,7 @@ data class SingleRecipeDTO(
     val title: String,
     val image: String,
     var ingredients: String
-)
+){
+    // Constructor sin argumentos requerido por Firestore
+    constructor() : this(0, "", "", "")
+}

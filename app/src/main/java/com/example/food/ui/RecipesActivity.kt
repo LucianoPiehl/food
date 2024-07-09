@@ -21,13 +21,15 @@ class RecipesActivity : AppCompatActivity() {
         if (email != null) {
             viewModel.setUserEmail(email)
 
+        }else{
+            viewModel.setUserEmail("")
         }
 
 
         super.onCreate(savedInstanceState)
         binding = ActivityRecipesBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        recipesAdapter = RecipesAdapter(viewModel,this@RecipesActivity, email?:"")
+        recipesAdapter = RecipesAdapter(email.toString(),viewModel,this@RecipesActivity, email?:"")
         viewModel.recipesAdapter = recipesAdapter
         binding.recipesRecyclerView.apply {
             layoutManager = GridLayoutManager(this@RecipesActivity, 2)

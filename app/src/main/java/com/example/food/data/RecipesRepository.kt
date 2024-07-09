@@ -30,7 +30,7 @@ class RecipesRepository() {
             }
         }
     }
-    fun getRandomRecipe(): Call<RecipeDTO> {
+    private fun getRandomRecipe(): Call<RecipeDTO> {
         return dataSource.getRandomRecipe()
     }
     fun loadRecipes(appContext: Context, loadedRecipes: MutableList<Recipe>,recipes: LiveData<List<Recipe>>,_recipes: MutableLiveData<List<Recipe>>){
@@ -55,7 +55,6 @@ class RecipesRepository() {
                                         override fun onResponse(call: Call<String>, detailResponse: Response<String>) {
                                             if (detailResponse.isSuccessful) {
                                                 val detail = detailResponse.body()
-                                                Log.d("DEBUG NUEVO",detail.toString())
                                                 detail?.let {
                                                     // Combinar datos y crear el objeto Recipe
                                                     val newRecipe = Recipe(recipeDetail.id, recipeDetail.title, recipeDetail.image,
@@ -68,6 +67,7 @@ class RecipesRepository() {
                                                                 db.recipeDao().insertRecipes((newRecipe))
                                                             }
                                                         }
+
                                                     } catch (e: Exception) {
                                                         Log.e("RecipesViewModel", "Error inserting recipes into local database", e)
                                                     }
@@ -96,22 +96,24 @@ class RecipesRepository() {
                             Log.d("DEBUG", "El cuerpo de la respuesta es nulo")
                         }
                     } else {
-                        Log.d("DEBUG_DE LA API", "Error en la respuesta del servidor") //NO DEBERIA IR ACA EL CODIGO DE USAR LA BASE DE DATOS?
-                        val localRecipes = getRecipesFromLocalDatabase()
+                        Log.d("DEBUG_DE LA API", "Error en la respuesta del servidor")
+                        getRecipesFromLocalDatabase(appContext,loadedRecipes,_recipes)
+
 
                     }
                 }
-                private fun getRecipesFromLocalDatabase() {
+                private fun getRecipesFromLocalDatabase(appContext: Context, loadedRecipes: MutableList<Recipe>, _recipes: MutableLiveData<List<Recipe>>) {
                     try {
-                        // Ejecutar en un hilo secundario
                         GlobalScope.launch {
                             withContext(Dispatchers.IO) {
                                 val db = AppDatabase.getDatabase(appContext)
-                                val recipes = db.recipeDao().getAllRecipesSync() // Asegúrate de obtener las recetas correctamente
-                                loadedRecipes.clear()
-                                loadedRecipes.addAll(recipes)
-                                _recipes.postValue(loadedRecipes)
+                                val recipes = db.recipeDao().getAllRecipesSync()
+                                withContext(Dispatchers.Main) {
+                                    loadedRecipes.clear()
+                                    loadedRecipes.addAll(recipes)
+                                    _recipes.postValue(loadedRecipes)
 
+                                }
                             }
                         }
                     } catch (e: Exception) {
@@ -125,7 +127,7 @@ class RecipesRepository() {
             })
         }
     }
-    fun getRecipeById(id: Int): Call<SingleRecipeDTO> {
+    suspend fun getRecipeById(id: Int):SingleRecipeDTO {
         return dataSource.getRecipeById(id)
     }
 }

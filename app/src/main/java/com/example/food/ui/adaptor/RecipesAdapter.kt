@@ -16,12 +16,12 @@ import com.example.food.ui.RecipeDetailActivity
 import com.example.food.ui.RecipesViewModel
 import com.squareup.picasso.Picasso
 
-class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context,private val userEmail: String): RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
+class RecipesAdapter(email3:String,viewModel: RecipesViewModel, cont2: Context,private val userEmail: String): RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
 
     private var recipes: List<Recipe> = emptyList()
     private var viewModel2 = viewModel
     private val cont = cont2
-    private var email = ""
+    private var email = email3
     fun updateRecipes(newRecipes: List<Recipe>) {
         recipes = newRecipes
         notifyDataSetChanged()
@@ -29,7 +29,7 @@ class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context,private val use
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         val binding = ItemRecipeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return RecipeViewHolder(binding, viewModel2, cont)
+        return RecipeViewHolder(email,binding, viewModel2, cont)
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
@@ -38,7 +38,7 @@ class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context,private val use
 
     override fun getItemCount(): Int = recipes.size
 
-    class RecipeViewHolder(private val binding: ItemRecipeBinding,viewModel3: RecipesViewModel,context: Context) : RecyclerView.ViewHolder(binding.root) {
+    class RecipeViewHolder(private val email2:String, private val binding: ItemRecipeBinding, viewModel3: RecipesViewModel, context: Context) : RecyclerView.ViewHolder(binding.root) {
         private val viewModel = viewModel3
         private val appContext = context
         fun bind(recipe: Recipe) {
@@ -51,6 +51,7 @@ class RecipesAdapter(viewModel: RecipesViewModel, cont2: Context,private val use
                 val context = it.context
                 val intent = Intent(context, RecipeDetailActivity::class.java).apply {
                     putExtra("RECIPE_ID", recipe.id)
+                    putExtra("EMAIL",email2)
                 }
 
                 context.startActivity(intent)

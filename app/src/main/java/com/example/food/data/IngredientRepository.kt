@@ -17,6 +17,7 @@ class IngredientRepository() {
         }
     }
     fun getIngredientXID(id: Int): Call<String> {
+        Log.d("DEBUG NUEVO 2",dataSource.getIngredientById(id).toString())
         return dataSource.getIngredientById(id)
     }
 }

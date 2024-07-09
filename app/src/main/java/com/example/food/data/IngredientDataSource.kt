@@ -1,5 +1,6 @@
 package com.example.food.data
 
+import android.util.Log
 import com.example.food.model.IngredientDTO
 import com.google.gson.GsonBuilder
 import retrofit2.Call
@@ -35,6 +36,7 @@ class IngredientDataSource {
     }
 
     fun getIngredientById(id: Int): Call<String> {
+        Log.d("DEBUG NUEVO 3",api.getIngredientsWidget(id).toString())
         return api.getIngredientsWidget(id)
     }
 }
