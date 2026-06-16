@@ -5,127 +5,128 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:visibility="visible"
+    android:background="@drawable/bg_food_gradient"
     tools:context=".ui.LoginActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:text=" INICIAR SESION "
-        android:textSize="34sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="94dp"
-        android:layout_marginTop="4dp"
-        android:background="#FA0000"
-        android:orientation="horizontal"
+        android:id="@+id/topBanner"
+        android:layout_width="0dp"
+        android:layout_height="330dp"
+        android:background="@color/brand_red"
+        android:gravity="center"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/screenshot_1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="@string/login_hero_badge"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:textStyle="bold" />
     </LinearLayout>
-
-    <EditText
-        android:id="@+id/email"
-        android:layout_width="278dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="24dp"
-        android:breakStrategy="high_quality"
-        android:drawableStart="#000000"
-        android:drawableLeft="#000000"
-        android:drawableEnd="#000000"
-        android:drawableRight="#000000"
-        android:drawableBottom="#000000"
-        android:drawableTint="#000000"
-        android:ems="10"
-        android:hint="INGRESE SU MAIL. . ."
-        android:inputType="text"
-        android:singleLine="true"
-        android:textAlignment="center"
-        android:visibility="visible"
-        app:circularflow_defaultAngle="1"
-        app:layout_constraintBottom_toTopOf="@+id/contrasenia"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
-
-    <EditText
-        android:id="@+id/contrasenia"
-        android:layout_width="278dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="24dp"
-        android:ems="10"
-        android:hint="INGRESE SU CONTRASEÑA. . ."
-        android:inputType="text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/mensaje"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="96dp"
-        android:background="#FA0000"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/contentCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/bg_surface_panel"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:padding="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBanner">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_title"
+            android:textColor="@color/brand_text"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/login_subtitle"
+            android:textColor="@color/brand_muted"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="@string/login_google_helper"
+            android:textColor="@color/brand_text"
+            android:textSize="15sp" />
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/googleSignInButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="28dp" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/loginProgress"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:indicatorColor="@color/brand_red"
+            app:trackColor="@color/brand_line" />
+
+        <TextView
+            android:id="@+id/loadingText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/login_loading"
+            android:textColor="@color/brand_muted"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/mensaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
+            android:textColor="@color/brand_red_dark"
+            android:textSize="14sp"
+            android:visibility="gone"
+            tools:text="No pudimos iniciar sesion con Google" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/goToRegistro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="132dp"
-        android:backgroundTint="#FFFFFF"
-        android:text="¿Todavia no tiene una cuenta?"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <TextView
-        android:id="@+id/mensaje"
-        android:layout_width="wrap_content"
+        android:id="@+id/footerText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:textColor="#FA0000"
-        app:layout_constraintBottom_toTopOf="@+id/ingresarBtn"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="28dp"
+        android:gravity="center"
+        android:text="@string/login_terms"
+        android:textColor="@color/brand_muted"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.471"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="Las credenciales ingresadas no son validas" />
-
-    <Button
-        android:id="@+id/ingresarBtn"
-        android:layout_width="188dp"
-        android:layout_height="51dp"
-        android:layout_marginBottom="24dp"
-        android:text="INGRESAR"
-        app:layout_constraintBottom_toTopOf="@+id/goToRegistro"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        app:layout_constraintTop_toBottomOf="@id/contentCard" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,13 +1,12 @@
 package com.example.food.model
 
 data class RecipeDTO(
-    val recipes: List<RecipeDetail>
+    val recipes: List<RecipeDetail> = emptyList()
 )
 
 data class RecipeDetail(
-    val id: Int,
-    val title: String,
-    val image: String,
-    val ingredients: String
-
+    val id: Int = 0,
+    val title: String = "",
+    val image: String = "",
+    val extendedIngredients: List<RecipeIngredient>? = emptyList()
 )

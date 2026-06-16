@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.food.databinding.ItemFavoriteBinding
-import com.example.food.databinding.ItemRecipeBinding
 import com.example.food.model.SingleRecipeDTO
 import com.example.food.ui.RecipeDetailActivity
 import com.example.food.ui.FavoritesViewModel
@@ -20,8 +19,21 @@ class FavoritesAdapter(email3: String, viewModel: FavoritesViewModel, cont2: Con
     private val email = email3
 
     fun updateFavorites(newFavorites: List<SingleRecipeDTO>) {
+        val previousFavorites = favorites
         favorites = newFavorites
-        notifyDataSetChanged()
+
+        val appendedItems =
+            newFavorites.size > previousFavorites.size &&
+                previousFavorites == newFavorites.take(previousFavorites.size)
+
+        if (appendedItems) {
+            notifyItemRangeInserted(
+                previousFavorites.size,
+                newFavorites.size - previousFavorites.size
+            )
+        } else {
+            notifyDataSetChanged()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteViewHolder {
@@ -39,8 +51,15 @@ class FavoritesAdapter(email3: String, viewModel: FavoritesViewModel, cont2: Con
         private val viewModel = viewModel3
         private val appContext = context
         fun bind(recipe: SingleRecipeDTO) {
+            binding.recipe = recipe
             binding.recipeTitle.text = recipe.title
-            Picasso.get().load(recipe.image).into(binding.recipeImage)
+            Picasso.get()
+                .load(recipe.image)
+                .fit()
+                .centerCrop()
+                .placeholder(com.example.food.R.drawable.bg_image_placeholder)
+                .into(binding.recipeImage)
+            binding.executePendingBindings()
 
             // Set click listener
             binding.root.setOnClickListener {

@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "818528080010",
-    "project_id": "food-5a48f",
-    "storage_bucket": "food-5a48f.appspot.com"
+    "project_number": "950122550041",
+    "project_id": "foody-b506b",
+    "storage_bucket": "foody-b506b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:818528080010:android:fbdbf42deb397889cedd73",
+        "mobilesdk_app_id": "1:950122550041:android:e7123a3cd5440ec6712b88",
         "android_client_info": {
           "package_name": "com.example.food"
         }
       },
       "oauth_client": [
         {
-          "client_id": "818528080010-ob3h5bblsi5juf1a91l3kl06f9e6j8s5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.food",
-            "certificate_hash": "a0cea3c5e094acac7c617cc4776c0941146f48cb"
-          }
-        },
-        {
-          "client_id": "818528080010-1ogn77h7ehc8otblh9anfpij1s5qalnp.apps.googleusercontent.com",
+          "client_id": "950122550041-dbll7qn5lh46ukp7749ea3nhb99fghl8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAWpqUghrtY-fyK7xuHRvgpA0zRqAEeyUU"
+          "current_key": "AIzaSyDpuyXJndFFWkp6iPAYMl6pwOVkieGRY_k"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "818528080010-1ogn77h7ehc8otblh9anfpij1s5qalnp.apps.googleusercontent.com",
+              "client_id": "950122550041-dbll7qn5lh46ukp7749ea3nhb99fghl8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

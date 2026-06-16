@@ -1,27 +1,25 @@
 package com.example.food.data
+
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.food.model.Recipe
 import com.example.food.model.RecipeDTO
+import com.example.food.model.RecipeIngredient
 import com.example.food.model.SingleRecipeDTO
-import com.example.food.util.sustraer_html
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.food.util.buildIngredientSummary
+import com.example.food.util.normalizeSearchText
+import com.example.food.util.parseIngredientSummary
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RecipesRepository() {
+class RecipesRepository {
     private val dataSource = RecipeDataSource.getInstance()
-    private val repository2 = IngredientRepository.getInstance()
-    private val extract_html = sustraer_html()
-    private val firestore = FirebaseFirestore.getInstance()
 
     companion object {
         @Volatile
@@ -41,7 +39,8 @@ class RecipesRepository() {
     fun loadRecipes(
         appContext: Context,
         loadedRecipes: MutableList<Recipe>,
-        _recipes: MutableLiveData<List<Recipe>>
+        recipesLiveData: MutableLiveData<List<Recipe>>,
+        canPublish: () -> Boolean
     ) {
         val calls = mutableListOf<Call<RecipeDTO>>()
         repeat(6) {
@@ -51,172 +50,201 @@ class RecipesRepository() {
         calls.forEach { call ->
             call.enqueue(object : Callback<RecipeDTO> {
                 override fun onResponse(call: Call<RecipeDTO>, response: Response<RecipeDTO>) {
-
                     if (response.isSuccessful) {
                         val recipeDTO = response.body()
-                        recipeDTO?.let {
-                            if (it.recipes.isNotEmpty()) {
+                        recipeDTO?.recipes.orEmpty().forEach { recipeDetail ->
+                            val newRecipe = Recipe(
+                                id = recipeDetail.id,
+                                title = recipeDetail.title,
+                                image = recipeDetail.image,
+                                ingredients = buildIngredientSummary(
+                                    recipeDetail.extendedIngredients.orEmpty()
+                                )
+                            )
 
-                                it.recipes.forEach { recipeDetail ->
-                                    // Realizamos una llamada adicional para obtener más datos
-                                    repository2.getIngredientXID(recipeDetail.id).enqueue(object :
-                                        Callback<String> {
-                                        override fun onResponse(
-                                            call: Call<String>,
-                                            detailResponse: Response<String>
-                                        ) {
-                                            if (detailResponse.isSuccessful) {
-                                                val detail = detailResponse.body()
-                                                detail?.let {
-                                                    // Combinar datos y crear el objeto Recipe
-                                                    val newRecipe = Recipe(
-                                                        recipeDetail.id,
-                                                        recipeDetail.title,
-                                                        recipeDetail.image,
-                                                        extract_html.removeIngredientGrid(detail)
-                                                    )
-                                                    try {
-                                                        GlobalScope.launch {
-                                                            withContext(Dispatchers.IO) {
-                                                                val db = AppDatabase.getDatabase(
-                                                                    appContext
-                                                                )
-                                                                // Insertar las recetas en la base de datos
-                                                                db.recipeDao()
-                                                                    .insertRecipes((newRecipe))
-                                                            }
-                                                        }
-
-                                                    } catch (e: Exception) {
-                                                        Log.e(
-                                                            "RecipesViewModel",
-                                                            "Error inserting recipes into local database",
-                                                            e
-                                                        )
-                                                    }
-                                                    // Agregamos la nueva receta a la lista cargada
-                                                    loadedRecipes.add(newRecipe)
-                                                    // Actualizamos el LiveData con todas las recetas cargadas
-                                                    _recipes.postValue(loadedRecipes)
-                                                } ?: run {
-                                                    Log.d("DEBUG2", "El cuerpo del detalle es nulo")
-                                                }
-                                            } else {
-                                                Log.d(
-                                                    "DEBUG2",
-                                                    "Error en la respuesta del servidor de detalle"
-                                                )
-                                            }
-                                        }
-
-                                        override fun onFailure(call: Call<String>, t: Throwable) {
-                                            // Handle failure
-                                            Log.d("DEBUG2", t.toString())
-                                        }
-                                    })
+                            if (loadedRecipes.none { recipe -> recipe.id == newRecipe.id }) {
+                                persistRecipe(appContext, newRecipe)
+                                loadedRecipes.add(newRecipe)
+                                if (canPublish()) {
+                                    recipesLiveData.postValue(loadedRecipes.toList())
                                 }
-                            } else {
-                                Log.d("DEBUG", "La lista de recetas está vacía")
                             }
-                        } ?: run {
-                            Log.d("DEBUG", "El cuerpo de la respuesta es nulo")
                         }
                     } else {
-                        Log.d("DEBUG_DE LA API", "Error en la respuesta del servidor")
-                        getRecipesFromLocalDatabase(appContext, loadedRecipes, _recipes)
-
-
-                    }
-                }
-
-                private fun getRecipesFromLocalDatabase(
-                    appContext: Context,
-                    loadedRecipes: MutableList<Recipe>,
-                    _recipes: MutableLiveData<List<Recipe>>
-                ) {
-                    try {
-                        GlobalScope.launch {
-                            withContext(Dispatchers.IO) {
-                                val db = AppDatabase.getDatabase(appContext)
-                                val recipes = db.recipeDao().getAllRecipesSync()
-                                withContext(Dispatchers.Main) {
-                                    loadedRecipes.clear()
-                                    loadedRecipes.addAll(recipes)
-                                    _recipes.postValue(loadedRecipes)
-
-                                }
-                            }
-                        }
-                    } catch (e: Exception) {
-                        Log.e("RecipesViewModel", "Error retrieving recipes from local database", e)
+                        Log.d("DEBUG_DE_LA_API", "Error en la respuesta del servidor")
+                        loadRecipesFromLocalDatabase(
+                            appContext,
+                            loadedRecipes,
+                            recipesLiveData,
+                            canPublish
+                        )
                     }
                 }
 
                 override fun onFailure(call: Call<RecipeDTO>, t: Throwable) {
-                    // Handle failure
                     Log.d("DEBUG", t.toString())
+                    loadRecipesFromLocalDatabase(
+                        appContext,
+                        loadedRecipes,
+                        recipesLiveData,
+                        canPublish
+                    )
                 }
             })
         }
     }
 
-    suspend fun getRecipeById(id: Int): SingleRecipeDTO {
-        return dataSource.getRecipeById(id)
+    private fun persistRecipe(appContext: Context, recipe: Recipe) {
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                val db = AppDatabase.getDatabase(appContext)
+                db.recipeDao().insertRecipes(recipe)
+            }
+        } catch (exception: Exception) {
+            Log.e("RecipesRepository", "Error al guardar recetas localmente", exception)
+        }
     }
 
-    fun setFavorite(email: String, id: Int) {
-        return dataSource.setFavorite(email, id)
-    }
-
-    suspend fun getFavorites(email:String,
-                             loadedRecipes: MutableList<SingleRecipeDTO>
-                             ,_recipes: MutableLiveData<List<SingleRecipeDTO>>
-    ){
-        return dataSource.getFavorites(email,loadedRecipes,_recipes)
-
-    }
-    /*
-    suspend fun getFavorites(
-
+    private fun loadRecipesFromLocalDatabase(
         appContext: Context,
-        userEmail: String,
-        favoriteRecipes: MutableList<SingleRecipeDTO>,
-        _favorites: MutableLiveData<List<SingleRecipeDTO>>
+        loadedRecipes: MutableList<Recipe>,
+        recipesLiveData: MutableLiveData<List<Recipe>>,
+        canPublish: () -> Boolean
     ) {
         try {
-            val userDoc = firestore.collection("FavUsers").document(userEmail).get().await()
-            if (userDoc.exists()) {
-                val favoritesCollection = userDoc.reference.collection("Favorites").get().await()
-                favoritesCollection.documents.mapNotNull { document ->
-                    val recipeId = document.getLong("id")?.toInt()
-                    recipeId?.let {
-                        val recipe = getRecipeSafely(it)
-                        recipe?.let {
-                            favoriteRecipes.add(it)
-                            _favorites.postValue(favoriteRecipes)
-                        }
-                    }
+            CoroutineScope(Dispatchers.Main).launch {
+                val recipes = withContext(Dispatchers.IO) {
+                    val db = AppDatabase.getDatabase(appContext)
+                    db.recipeDao().getAllRecipesSync()
+                }
+
+                loadedRecipes.clear()
+                loadedRecipes.addAll(recipes)
+                if (canPublish()) {
+                    recipesLiveData.postValue(loadedRecipes.toList())
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (exception: Exception) {
+            Log.e("RecipesRepository", "Error al recuperar recetas locales", exception)
         }
     }
 
-    private suspend fun getRecipeSafely(id: Int): SingleRecipeDTO? {
-        return withContext(Dispatchers.IO) {
-            try {
-                dataSource.getRecipeById(id)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
+    suspend fun getRecipeDetail(
+        appContext: Context,
+        email: String,
+        id: Int
+    ): RecipeDetailResult {
+        return try {
+            RecipeDetailResult(recipe = dataSource.getRecipeById(id))
+        } catch (exception: RecipeDataException) {
+            val fallbackRecipe = getCachedRecipe(appContext, id)
+                ?: dataSource.getFavoriteRecipeSnapshot(email, id)?.withParsedIngredients()
+
+            if (fallbackRecipe != null) {
+                RecipeDetailResult(
+                    recipe = fallbackRecipe,
+                    userMessage = resolveDetailFallbackMessage(exception.type),
+                    isFallback = true
+                )
+            } else {
+                throw exception
             }
         }
     }
-    */
 
+    suspend fun setFavorite(email: String, recipe: Recipe, isFavorite: Boolean): Boolean {
+        return dataSource.setFavorite(
+            email = email,
+            id = recipe.id,
+            title = recipe.title,
+            image = recipe.image.orEmpty(),
+            ingredients = recipe.ingredients,
+            isFavorite = isFavorite
+        )
+    }
 
+    suspend fun setFavorite(email: String, recipe: SingleRecipeDTO, isFavorite: Boolean): Boolean {
+        return dataSource.setFavorite(
+            email = email,
+            id = recipe.id,
+            title = recipe.title,
+            image = recipe.image,
+            ingredients = recipe.ingredients,
+            isFavorite = isFavorite
+        )
+    }
 
+    suspend fun isFavorite(email: String, id: Int): Boolean {
+        return dataSource.isFavorite(email, id)
+    }
+
+    suspend fun getFavoriteIds(email: String): Set<Int> {
+        return dataSource.getFavoriteIds(email)
+    }
+
+    suspend fun getFavorites(email: String): List<SingleRecipeDTO> {
+        return dataSource.getFavorites(email)
+    }
+
+    suspend fun searchRecipes(query: String, cachedRecipes: List<Recipe>): List<Recipe> {
+        return try {
+            dataSource.searchRecipes(query)
+        } catch (exception: Exception) {
+            Log.d("DEBUG_SEARCH", "Error buscando recetas remotas: ${exception.message}")
+            filterRecipesLocally(cachedRecipes, query)
+        }
+    }
+
+    private fun filterRecipesLocally(recipes: List<Recipe>, query: String): List<Recipe> {
+        val normalizedQuery = normalizeSearchText(query)
+        if (normalizedQuery.isBlank()) {
+            return recipes
+        }
+
+        return recipes.filter { recipe ->
+            normalizeSearchText(recipe.title).contains(normalizedQuery) ||
+                normalizeSearchText(recipe.ingredients).contains(normalizedQuery)
+        }
+    }
+
+    private suspend fun getCachedRecipe(appContext: Context, id: Int): SingleRecipeDTO? {
+        return withContext(Dispatchers.IO) {
+            val db = AppDatabase.getDatabase(appContext)
+            db.recipeDao().getRecipeById(id)?.toSingleRecipeDTO()
+        }
+    }
+
+    private fun Recipe.toSingleRecipeDTO(): SingleRecipeDTO {
+        val parsedIngredients = parseIngredientSummary(ingredients)
+        return SingleRecipeDTO(
+            id = id,
+            title = title,
+            image = image.orEmpty(),
+            ingredients = ingredients,
+            extendedIngredients = parsedIngredients
+        )
+    }
+
+    private fun SingleRecipeDTO.withParsedIngredients(): SingleRecipeDTO {
+        val parsedIngredients = if (extendedIngredients.isNullOrEmpty()) {
+            parseIngredientSummary(ingredients)
+        } else {
+            extendedIngredients
+        }
+
+        return copy(extendedIngredients = parsedIngredients)
+    }
+
+    private fun resolveDetailFallbackMessage(
+        errorType: RecipeDataErrorType
+    ): RecipeUserMessage {
+        return when (errorType) {
+            RecipeDataErrorType.API_QUOTA_EXCEEDED ->
+                RecipeUserMessage.SHOWING_SAVED_DETAIL_API_LIMIT
+            RecipeDataErrorType.NO_CONNECTION ->
+                RecipeUserMessage.SHOWING_SAVED_DETAIL_OFFLINE
+            else ->
+                RecipeUserMessage.SHOWING_SAVED_DETAIL_SERVICE_ISSUE
+        }
+    }
 }
-
-

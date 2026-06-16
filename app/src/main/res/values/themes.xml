@@ -1,9 +1,40 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Foody" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.Foody" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/brand_red</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/brand_peach</item>
+        <item name="colorOnPrimaryContainer">@color/brand_text</item>
+        <item name="colorSecondary">@color/brand_green</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/brand_line</item>
+        <item name="colorOnSecondaryContainer">@color/brand_text</item>
+        <item name="colorSurface">@color/brand_surface</item>
+        <item name="colorOnSurface">@color/brand_text</item>
+        <item name="colorSurfaceVariant">@color/brand_line</item>
+        <item name="colorOnSurfaceVariant">@color/brand_muted</item>
+        <item name="colorOutline">@color/brand_line</item>
+        <item name="android:windowBackground">@color/brand_cream</item>
+        <item name="android:windowAnimationStyle">@style/FoodyWindowAnimation</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 
     <style name="Theme.Foody" parent="Base.Theme.Foody" />
+
+    <style name="FoodyWindowAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_close_exit</item>
+    </style>
+
+    <style name="Theme.Foody.Splash" parent="Theme.SplashScreen.IconBackground">
+        <item name="android:windowBackground">@color/brand_red</item>
+        <item name="windowSplashScreenBackground">@color/brand_red</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/screenshot_1</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/brand_red</item>
+        <item name="postSplashScreenTheme">@style/Theme.Foody</item>
+    </style>
 </resources>

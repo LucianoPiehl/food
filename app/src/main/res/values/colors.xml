@@ -4,4 +4,17 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FA0000</color>
     <color name="grey">#858585</color>
+    <color name="brand_red">#FA0000</color>
+    <color name="brand_red_dark">#D40000</color>
+    <color name="brand_red_soft">#FF4B4B</color>
+    <color name="brand_cream">#FFFFFFFF</color>
+    <color name="brand_surface">#FFFFFFFF</color>
+    <color name="brand_peach">#FFF1F1</color>
+    <color name="brand_text">#111111</color>
+    <color name="brand_muted">#666666</color>
+    <color name="brand_line">#FFD7D7</color>
+    <color name="brand_gold">#F4C14E</color>
+    <color name="brand_green">#FA0000</color>
+    <color name="brand_overlay">#26FFFFFF</color>
+    <color name="brand_shadow">#14000000</color>
 </resources>

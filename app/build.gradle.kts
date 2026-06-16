@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("com.google.devtools.ksp")
     id("kotlin-kapt")
     id("com.google.gms.google-services")
 }
@@ -9,14 +8,16 @@ plugins {
 android {
     signingConfigs {
         getByName("debug") {
-            storePassword = "elpioli123"
-            keyAlias = "nombreAlias"
-            keyPassword = "elpioli123"
-            storeFile = file("C:\\Users\\54225\\.android\\debug.keystore")
+            storePassword = "android"
+            keyAlias = "foodydebugkey"
+            keyPassword = "android"
+            storeFile = file("C:\\Users\\Carlos\\Desktop\\food\\foody-debug.keystore")
         }
     }
-    packagingOptions {
-        resources.excludes.add("META-INF/*")
+    packaging {
+        resources {
+            excludes += "META-INF/*"
+        }
     }
     buildToolsVersion = "34.0.0"
     namespace = "com.example.food"
@@ -65,13 +66,14 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics:22.0.2")
     implementation(libs.androidx.lifecycle.viewmodel.android)
     implementation(libs.firebase.auth.ktx)
-    implementation(libs.play.services.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.play.services.auth)
     val room_version = "2.6.1"
     implementation("androidx.room:room-ktx:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-runtime:$room_version")
     implementation(libs.androidx.core.ktx)
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
