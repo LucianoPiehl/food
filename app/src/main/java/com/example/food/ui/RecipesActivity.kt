@@ -2,6 +2,7 @@ package com.example.food.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnPreDraw
@@ -11,6 +12,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.food.R
 import com.example.food.databinding.ActivityRecipesBinding
+import com.example.food.model.Recipe
+import com.example.food.ui.RecipeDetailActivity
+import com.example.food.ui.adaptor.RecipeItemActions
 import com.example.food.ui.adaptor.RecipesAdapter
 import com.example.food.util.configureFeedMotion
 import com.example.food.util.playEntranceMotion
@@ -50,8 +54,61 @@ class RecipesActivity : AppCompatActivity() {
             viewModel.searchRecipes(editable?.toString().orEmpty())
         }
 
-        recipesAdapter = RecipesAdapter(email, viewModel, this@RecipesActivity)
-        viewModel.recipesAdapter = recipesAdapter
+        recipesAdapter = RecipesAdapter(
+            object : RecipeItemActions {
+                override fun onRecipeSelected(recipe: Recipe) {
+                    val intent = Intent(
+                        this@RecipesActivity,
+                        RecipeDetailActivity::class.java
+                    ).apply {
+                        putExtra("RECIPE_ID", recipe.id)
+                        putExtra("EMAIL", email)
+                    }
+                    startActivity(intent)
+                }
+
+                override fun requestFavoriteState(
+                    recipe: Recipe,
+                    onComplete: (Boolean) -> Unit
+                ) {
+                    viewModel.syncFavoriteState(recipe, onComplete)
+                }
+
+                override fun onFavoriteToggleRequested(
+                    recipe: Recipe,
+                    onSuccess: (Boolean) -> Unit,
+                    onLoginRequired: () -> Unit,
+                    onError: () -> Unit
+                ) {
+                    if (email.isBlank()) {
+                        onLoginRequired()
+                        return
+                    }
+
+                    viewModel.toggleFavorite(recipe) { newState ->
+                        when (newState) {
+                            null -> onError()
+                            else -> onSuccess(newState)
+                        }
+                    }
+                }
+            }
+            ,
+            onFavoriteLoginRequired = {
+                Toast.makeText(
+                    this@RecipesActivity,
+                    getString(R.string.detail_favorite_login_required),
+                    Toast.LENGTH_SHORT
+                ).show()
+            },
+            onFavoriteError = {
+                Toast.makeText(
+                    this@RecipesActivity,
+                    getString(R.string.favorite_error_generic),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
 
         binding.recipesRecyclerView.apply {
             layoutManager = GridLayoutManager(this@RecipesActivity, 2)

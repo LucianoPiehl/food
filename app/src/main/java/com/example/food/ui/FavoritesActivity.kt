@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.food.R
 import com.example.food.databinding.ActivityFavoritesBinding
+import com.example.food.ui.RecipeDetailActivity
 import com.example.food.ui.adaptor.FavoritesAdapter
 import com.example.food.util.configureFeedMotion
 import com.example.food.util.playEntranceMotion
@@ -44,8 +45,16 @@ class FavoritesActivity : AppCompatActivity() {
             viewModel.searchFavorites(editable?.toString().orEmpty())
         }
 
-        favoritesAdapter = FavoritesAdapter(email, viewModel, this@FavoritesActivity)
-        viewModel.favoritesAdapter = favoritesAdapter
+        favoritesAdapter = FavoritesAdapter { recipe ->
+            val intent = android.content.Intent(
+                this@FavoritesActivity,
+                RecipeDetailActivity::class.java
+            ).apply {
+                putExtra("RECIPE_ID", recipe.id)
+                putExtra("EMAIL", email)
+            }
+            startActivity(intent)
+        }
 
         binding.favoritesRecyclerView.apply {
             layoutManager = GridLayoutManager(this@FavoritesActivity, 2)

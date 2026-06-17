@@ -1,22 +1,28 @@
 package com.example.food.ui.adaptor
 
-import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.food.R
 import com.example.food.databinding.ItemRecipeBinding
 import com.example.food.model.Recipe
-import com.example.food.ui.RecipeDetailActivity
-import com.example.food.ui.RecipesViewModel
 import com.squareup.picasso.Picasso
 
+interface RecipeItemActions {
+    fun onRecipeSelected(recipe: Recipe)
+    fun requestFavoriteState(recipe: Recipe, onComplete: (Boolean) -> Unit)
+    fun onFavoriteToggleRequested(
+        recipe: Recipe,
+        onSuccess: (Boolean) -> Unit,
+        onLoginRequired: () -> Unit,
+        onError: () -> Unit
+    )
+}
+
 class RecipesAdapter(
-    private val email: String,
-    private val viewModel2: RecipesViewModel,
-    private val cont: Context
+    private val itemActions: RecipeItemActions,
+    private val onFavoriteLoginRequired: () -> Unit,
+    private val onFavoriteError: () -> Unit
 ) : RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
 
     private var recipes: List<Recipe> = emptyList()
@@ -41,7 +47,12 @@ class RecipesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         val binding = ItemRecipeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return RecipeViewHolder(email, binding, viewModel2, cont)
+        return RecipeViewHolder(
+            binding,
+            itemActions,
+            onFavoriteLoginRequired,
+            onFavoriteError
+        )
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
@@ -51,13 +62,11 @@ class RecipesAdapter(
     override fun getItemCount(): Int = recipes.size
 
     class RecipeViewHolder(
-        private val email2: String,
         private val binding: ItemRecipeBinding,
-        viewModel3: RecipesViewModel,
-        context: Context
+        private val itemActions: RecipeItemActions,
+        private val onFavoriteLoginRequired: () -> Unit,
+        private val onFavoriteError: () -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
-        private val viewModel = viewModel3
-        private val appContext = context
 
         fun bind(recipe: Recipe) {
             binding.recipe = recipe
@@ -71,49 +80,29 @@ class RecipesAdapter(
 
             updateFavoriteIcon(recipe.isFavorite)
             val boundRecipeId = recipe.id
-            viewModel.syncFavoriteState(recipe) { isFavorite ->
+            itemActions.requestFavoriteState(recipe) { isFavorite ->
                 if (binding.recipe?.id == boundRecipeId) {
                     updateFavoriteIcon(isFavorite)
                 }
             }
 
             binding.favoriteIcon.setOnClickListener {
-                if (email2.isBlank()) {
-                    Toast.makeText(
-                        appContext,
-                        appContext.getString(R.string.detail_favorite_login_required),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                viewModel.toggleFavorite(recipe) { newState ->
-                    if (binding.recipe?.id != boundRecipeId) {
-                        return@toggleFavorite
-                    }
-
-                    if (newState == null) {
-                        Toast.makeText(
-                            appContext,
-                            appContext.getString(R.string.favorite_error_generic),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        updateFavoriteIcon(newState)
-                    }
-                }
+                itemActions.onFavoriteToggleRequested(
+                    recipe = recipe,
+                    onSuccess = { newState ->
+                        if (binding.recipe?.id == boundRecipeId) {
+                            updateFavoriteIcon(newState)
+                        }
+                    },
+                    onLoginRequired = onFavoriteLoginRequired,
+                    onError = onFavoriteError
+                )
             }
 
             binding.executePendingBindings()
 
             binding.root.setOnClickListener {
-                val context = it.context
-                val intent = Intent(context, RecipeDetailActivity::class.java).apply {
-                    putExtra("RECIPE_ID", recipe.id)
-                    putExtra("EMAIL", email2)
-                }
-
-                context.startActivity(intent)
+                itemActions.onRecipeSelected(recipe)
             }
         }
 

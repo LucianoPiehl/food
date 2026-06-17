@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.food.data.RecipesRepository
 import com.example.food.model.SingleRecipeDTO
-import com.example.food.ui.adaptor.FavoritesAdapter
 import com.example.food.util.normalizeSearchText
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -17,7 +16,6 @@ class FavoritesViewModel(private val context: Context) : ViewModel() {
     private val _favorites = MutableLiveData<List<SingleRecipeDTO>>()
     val favorites: LiveData<List<SingleRecipeDTO>> get() = _favorites
     var _userEmail = String()
-    lateinit var favoritesAdapter: FavoritesAdapter
     private var loadFavoritesJob: Job? = null
     private var allFavorites: List<SingleRecipeDTO> = emptyList()
     private var currentSearchQuery = ""

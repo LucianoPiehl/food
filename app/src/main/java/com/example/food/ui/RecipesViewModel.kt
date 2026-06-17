@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.food.data.RecipesRepository
 import com.example.food.model.Recipe
-import com.example.food.ui.adaptor.RecipesAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -21,7 +20,6 @@ class RecipesViewModel(private val appContext: Context) : ViewModel() {
     private val _recipes = MutableLiveData<List<Recipe>>()
 
     val recipes: LiveData<List<Recipe>> get() = _recipes
-    lateinit var recipesAdapter: RecipesAdapter
     private val _userEmail = MutableLiveData<String>()
 
     private var loadedRecipes = mutableListOf<Recipe>()
